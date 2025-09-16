@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Тест території</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body,html,#map {
+      height:100%;
+      margin:0;
+      padding:0;
+    }
+    .controls {
+      position:fixed;
+      bottom:10px;
+      left:10px;
+      background:#fff;
+      padding:8px;
+      border-radius:6px;
+      box-shadow:0 2px 6px rgba(0,0,0,.2);
+      z-index:1000; /* кнопки завжди поверх карти */
+    }
+    .controls button {
+      display:block;
+      width:100%;
+      margin:4px 0;
+      padding:8px 12px;
+      font-size:14px;
+      cursor:pointer;
+      border:1px solid #ccc;
+      border-radius:4px;
+      background:#f8f8f8;
+    }
+    .controls button:hover {
+      background:#eaeaea;
+    }
+    #info {
+      margin-bottom:6px;
+      font-size:13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="controls" id="controls">
+    <div id="info">Завантаження...</div>
+    <button id="openGoogle">Відкрити в Google Maps</button>
+    <button id="openWaze">Відкрити у Waze</button>
+    <button id="openApple">Відкрити в Apple Maps</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Координати центру (Виноградів)
+    const destLat = 48.137658;
+    const destLng = 23.025638;
+
+    const map = L.map('map').setView([destLat, destLng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap'
+    }).addTo(map);
+
+
+    // Проста тестова лінія (частина Вулиці)
+    const streetLine = {"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"LineString","coordinates":[[23.0212037,48.1362086],[23.021193,48.1380272],[23.0212037,48.1391585]]},"properties":{"name":"Лінія 1","styleUrl":"#line-FF5252-5263-nodesc","stroke-opacity":1,"stroke":"#ff5252","stroke-width":5.263}},
+{"type":"Feature","geometry":{"type":"LineString","coordinates":[[23.021193,48.1380272],[23.0230383,48.1379843],[23.0265467,48.1379199],[23.029776,48.1378554]]},"properties":{"name":"Лінія 3","styleUrl":"#line-FF5252-5263-nodesc","stroke-opacity":1,"stroke":"#ff5252","stroke-width":5.263}}
+]}
+
+    L.geoJSON(streetLine, {style: {color:'#ff0000', weight:5}}).addTo(map);
+    map.fitBounds(L.geoJSON(streetLine).getBounds(), {padding:[40,40]});
+    document.getElementById('info').textContent = 'Навігація';
+
+    // Лінки на різні навігатори
+    function googleUrl(lat, lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`; }
+    function wazeUrl(lat, lng){ return `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`; }
+    function appleUrl(lat, lng){ return `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=w`; }
+
+    document.getElementById('openGoogle').addEventListener('click', ()=>{ window.location.href = googleUrl(destLat, destLng); });
+    document.getElementById('openWaze').addEventListener('click', ()=>{ window.location.href = wazeUrl(destLat, destLng); });
+    document.getElementById('openApple').addEventListener('click', ()=>{ window.location.href = appleUrl(destLat, destLng); });
+  </script>
+</body>
+</html>
